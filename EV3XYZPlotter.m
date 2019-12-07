@@ -3,7 +3,8 @@
 %   encoder, so not getting same radius every time. 
 %2. Triangle test
 %3. PID controller overkill??
-%4. ??
+%4. Position the shape as defined in the project
+%5. ??
 
 clc
 clear all
@@ -11,7 +12,7 @@ if exist('ev3ShellHandle')
    clear ev3ShellHandle
 end
 
-%Axis as defined in our project
+%Axis as defined in the project
 %                   x
 %                   x
 %                   x
@@ -48,7 +49,7 @@ zPort = 'C'; % ports in ev3
 xdegree = 2.04545; % degree per mm
 ydegree = 3; % degree per mm
 
-%making connection
+%making connection to EV3
 ev3ShellHandle = legoev3('USB');
 
 %if wifi exists
@@ -86,7 +87,12 @@ engagePen(zm, -1) % pen up
 % terminate the connection
 clear ev3ShellHandle
 
+%move pen up or down
 function engagePen(zm, direction)
+%   Move pen up or down
+%   Parameter
+%       zm : otor to move
+%       direction: 1 for up and -1 for down
     global speed;
     start(xm , direction * (speed/2));
     changed = 1;
