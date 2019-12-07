@@ -12,14 +12,16 @@ if exist('ev3ShellHandle')
    clear ev3ShellHandle
 end
 
-%Axis as defined in the project
-%                   x
-%                   x
-%                   x
-%                   x
-%                   x
-%                   x
-%yyyyyyyyyyyyyyyyyyyy
+% Axis as defined in the project
+% These sign for x and y are only valid for circle for this project
+%         |          x
+%   x+    |   x-     x
+%   y-    |   y-     x
+%---------|----------x
+%    x+   |   x-     x
+%    y+   |   y+     x
+%         |          x
+%yyyyyyyyyyyyyyyyyyyyy
 
 %Square Parameter
 l = 50; % in mm
@@ -180,11 +182,40 @@ function drawCircle(centercircle, r)
     end
     Vx = -10/rx .* x;
     Vy = 10/ry .* y;
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%Test for the circle%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%     engagePen(zm, -1)
+%     moveTo(xm, x(1), speed)
+%     moveTo(ym, y(1), speed)
+%     engagePen(zm, 1)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     start(xm, 0);
     start(ym, 0);
+    %Circle starts from [50,25] may be should start from [25, 0] array 271
+    %for x and y so this should be degree = 271:1:631;
     for i = 1:length(Vx)
         xm.Speed = Vx(i);
         ym.Speed = Vy(i);
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%Test for the circle%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%         if Vx(i) < 0 &&  Vy(i) > 0
+%             %x- y+
+%             while readRotation(xm) > x(i) && readRotation(ym) < y(i) 
+%             end
+%         elseif Vx(i) > 0 &&  Vy(i) > 0
+%             %x+ y+
+%             while readRotation(xm) < x(i) && readRotation(ym) < y(i) 
+%             end
+%         elseif Vx(i) > 0 &&  Vy(i) < 0
+%             %x+ y-
+%             while readRotation(xm) < x(i) && readRotation(ym) > y(i) 
+%             end
+%         elseif Vx(i) < 0 &&  Vy(i) < 0
+%             %x- y-
+%             while readRotation(xm) > x(i) && readRotation(ym) > y(i) 
+%             end
+%         end
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     end
     stop(xm);
     stop(ym);
