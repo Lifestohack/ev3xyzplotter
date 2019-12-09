@@ -43,8 +43,10 @@ global ym;
 global ydegree;
 global zm;
 global limitSwitch;
+global speedCircle;
 
 speed = 20; % default motor speed
+speedCircle = 30;
 xPort = 'A'; % ports in ev3
 yPort = 'B'; % ports in ev3
 zPort = 'C'; % ports in ev3
@@ -83,7 +85,7 @@ home(l) %home -> always run this function to home y. Make sure limit switch is c
 engagePen(zm, 1) % pen down
 drawQuadrilateral(l,l)
 drawCircle(centercircle, r);
-drawTriangle(t_init, t_mid, t_final)
+drawTriangle(init, mid, final)
 engagePen(zm, -1) % pen up
 
 % terminate the connection
@@ -96,7 +98,7 @@ function engagePen(zm, direction)
 %       zm : otor to move
 %       direction: 1 for up and -1 for down
     global speed;
-    start(xm , direction * (speed/2));
+    start(zm , direction * (speed/2));
     changed = 1;
     i = 0;
     oldValue = readRotation(zm);
@@ -134,7 +136,7 @@ function home(l)
     end
     stop(ym);
     ym.Speed = speed;
-    sleep(0.1) % settling time for percussion measure
+    pause(1) % settling time for percussion measure
     resetRotation(ym)
 end
 
@@ -170,23 +172,26 @@ function drawCircle(centercircle, r)
     global ym;
     global ydegree;
     global speed;
-    x0 = centercircle(1) * xdegree;
-    y0 = centercircle(2) * ydegree;
-    rx = r * xdegree; % xdegree 
-    ry = r * ydegree; % ydegree
+    global speedCircle;
+    x0 = centercircle(1);
+    y0 = centercircle(2);
     degree = 0:1:360;
-    x =  x0 + rx*(cos((pi/180) * degree));
-    y =  y0 + ry*(sin((pi/180) * degree));
+    x =  x0 + r*(cos((pi/180) * degree));
+    y =  y0 + r*(sin((pi/180) * degree));
     if length(x) ~= length(y)
         disp('WARNING!!! Length of x and y is not equal.')
     end
-    Vx = -10/rx .* x;
-    Vy = 10/ry .* y;
+    x = x .* xdegree
+    y = y .* ydegree
+    Vx = -speedCircle/r .* x;
+    Vy = speedCircle/r .* y;
+    disp(readRotation(xm))
+    disp(readRotation(ym))
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%Test for the circle%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %     engagePen(zm, -1)
-%     moveTo(xm, x(1), speed)
-%     moveTo(ym, y(1), speed)
+%     moveTo(xm, 25*xdegree, speed)
+%     moveTo(ym, 25*ydegree, 1)
 %     engagePen(zm, 1)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     start(xm, 0);
@@ -198,21 +203,21 @@ function drawCircle(centercircle, r)
         ym.Speed = Vy(i);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%Test for the circle%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%         if Vx(i) < 0 &&  Vy(i) > 0
+%         if Vx(i)==0 || Vx(i) < 0 && Vy(i)== 0 || Vy(i) > 0
 %             %x- y+
-%             while readRotation(xm) > x(i) && readRotation(ym) < y(i) 
+%             while x(i) == 0 || readRotation(xm) > x(i) && y(i) == 0 || readRotation(ym) < y(i) 
 %             end
-%         elseif Vx(i) > 0 &&  Vy(i) > 0
+%         elseif Vx(i)==0 || Vx(i) > 0 &&  Vy(i)== 0 || Vy(i) > 0
 %             %x+ y+
-%             while readRotation(xm) < x(i) && readRotation(ym) < y(i) 
+%             while x(i) == 0 || readRotation(xm) < x(i) && y(i) == 0 || readRotation(ym) < y(i) 
 %             end
-%         elseif Vx(i) > 0 &&  Vy(i) < 0
+%         elseif Vx(i)==0 || Vx(i) > 0 && Vy(i)== 0 || Vy(i) < 0
 %             %x+ y-
-%             while readRotation(xm) < x(i) && readRotation(ym) > y(i) 
+%             while x(i) == 0 || readRotation(xm) < x(i) && y(i) == 0 || readRotation(ym) > y(i) 
 %             end
-%         elseif Vx(i) < 0 &&  Vy(i) < 0
+%         elseif Vx(i)==0 || Vx(i) < 0 &&  Vy(i)== 0 || Vy(i) < 0
 %             %x- y-
-%             while readRotation(xm) > x(i) && readRotation(ym) > y(i) 
+%             while x(i) == 0 || readRotation(xm) > x(i) && y(i) == 0 || readRotation(ym) > y(i) 
 %             end
 %         end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -279,7 +284,24 @@ function moveTo(motor, degree, speed)
     motor.Speed = speed;
 end
 
-function stop()
+function distance = distancetraveled(motor)
+    global xdegree;
+    global ydegree;
+    global zdegree;
+    global xm;
+    global ym;
+    global zm;
+    angle = readRotation(motor);
+    if isequal(xm,motor)
+        distance =  angle * xdegree
+    elseif isequal(ym,motor)
+        distance =  angle * ydegree
+    elseif isequal(zm,motor)
+        distance =  angle * zdegree
+    end  
+end
+
+function stopMotors()
     %for app if designed
     global xm
     global ym
