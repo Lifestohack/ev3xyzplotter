@@ -203,23 +203,22 @@ function drawCircle(centercircle, r)
         ym.Speed = Vy(i);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%Test for the circle%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%         if Vx(i)==0 || Vx(i) < 0 && Vy(i)== 0 || Vy(i) > 0
-%             %x- y+
-%             while x(i) == 0 || readRotation(xm) > x(i) && y(i) == 0 || readRotation(ym) < y(i) 
+%             if i == length(Vx)
+%                 i = 1;
+%             end            
+%             if  x(i+1) - x(i) < 0 &&  y(i+1) - y(i) > 0
+%                 %x- y+
+%                 
+%             elseif  x(i+1) - x(i) < 0 &&  y(i+1) - y(i) < 0
+%                 %x- y-
+%                 
+%             elseif  x(i+1) - x(i) > 0 &&  y(i+1) - y(i) < 0
+%                 %x+ y-
+%                 
+%             elseif  x(i+1) - x(i) > 0 &&  y(i+1) - y(i) > 0
+%                 %x+ y+
+%                 
 %             end
-%         elseif Vx(i)==0 || Vx(i) > 0 &&  Vy(i)== 0 || Vy(i) > 0
-%             %x+ y+
-%             while x(i) == 0 || readRotation(xm) < x(i) && y(i) == 0 || readRotation(ym) < y(i) 
-%             end
-%         elseif Vx(i)==0 || Vx(i) > 0 && Vy(i)== 0 || Vy(i) < 0
-%             %x+ y-
-%             while x(i) == 0 || readRotation(xm) < x(i) && y(i) == 0 || readRotation(ym) > y(i) 
-%             end
-%         elseif Vx(i)==0 || Vx(i) < 0 &&  Vy(i)== 0 || Vy(i) < 0
-%             %x- y-
-%             while x(i) == 0 || readRotation(xm) > x(i) && y(i) == 0 || readRotation(ym) > y(i) 
-%             end
-%         end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     end
     stop(xm);
